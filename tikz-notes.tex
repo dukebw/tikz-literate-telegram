@@ -39,4 +39,24 @@ top of the basic layer.
 
 \section{A Picture for Karl's Students}
 
+\begin{tikzpicture}
+        \draw (-1.5, 0) -- (1.5, 0);
+        \draw (0, -1.5) -- (0, 1.5);
+        \draw (0, 0) circle [radius=1cm];
+\end{tikzpicture}
+
+\vspace{1cm}
+
+\begin{tikzpicture}
+        \filldraw [gray] (0, 0) circle [radius=2pt]
+                         (1, 1) circle [radius=2pt]
+                         (2, 1) circle [radius=2pt]
+                         (2, 0) circle [radius=2pt];
+        \draw (0, 0) .. controls (1, 1) and (2, 1) .. (2, 0);
+\end{tikzpicture}
+
+\vspace{1cm}
+
+\tikz \draw[rotate=30] (0, 0) ellipse [x radius=20pt, y radius=10pt];
+
 \end{document}

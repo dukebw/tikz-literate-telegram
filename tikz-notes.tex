@@ -525,15 +525,303 @@ top of the basic layer.
 
 \section{A Petri-Net for Hagen}
 
-\newcommand{\circnode}[2]{(#1, #2) node [shape=circle,draw] {}}
-\newcommand{\rectnode}[2]{(#1, #2) node [shape=rectangle,draw] {}}
+\newcommand{\circnode}[2]{\node at (#1, #2) [circle,draw] {}}
+\newcommand{\rectnode}[2]{\node at (#1, #2) [rectangle,draw] {}}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        \circnode{0}{2};
+        \circnode{0}{1};
+        \circnode{0}{0};
+        \rectnode{1}{1};
+        \rectnode{-1}{1};
+\end{tikzpicture}
+\caption{Simple Petri net.}
+\end{figure}
+
+% NOTE(brendan): inner sep is the automatic space placed around text.
+\tikzset{place/.style={circle,
+                       draw=blue!50,
+                       fill=blue!20,
+                       thick,
+                       inner sep=0pt,
+                       minimum size=6mm},
+         transition/.style={rectangle,
+                            draw=black!50,
+                            fill=black!20,
+                            thick,
+                            inner sep=0pt,
+                            minimum size=4mm}}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        \node[place] (waiting 1) at (0, 2) {};
+        \node[place] (critical 1) at (0, 1) {};
+        \node[transition] (semaphore) at (1, 1) {};
+        \node[transition] (leave critical) at (-1, 1) {};
+        \node[place] (enter critical) at (0, 0) {};
+\end{tikzpicture}
+\caption{Using styles.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical] {};
+        \node[transition] (leave critical) [right=of critical] {};
+        \node[transition] (enter critical) [left=of critical] {};
+
+        \node[red, above] at (semaphore.north) {$s \leq 3$};
+\end{tikzpicture}
+\caption{Placing nodes using relative placement, and adding labels next to
+         nodes.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[every label/.style={red}]
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical, label=above:$s \le 3$] {};
+        \node[transition] (leave critical) [right=of critical] {};
+        \node[transition] (enter critical) [left=of critical] {};
+\end{tikzpicture}
+\caption{Label.}
+\end{figure}
+
+\vspace{1cm}
+
+\tikz \node [circle, draw, label=60:$60^\circ$, label=below:$-90^\circ$] {my circle};
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical] {};
+        \node[transition] (leave critical) [right=of critical] {};
+        \node[transition] (enter critical) [left=of critical] {};
+
+        \draw [->] (enter critical) -- (critical);
+        \draw [->] (waiting) .. controls +(left:8mm) and +(up:8mm)
+                .. (enter critical);
+\end{tikzpicture}
+\caption{Connecting nodes.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical] {};
+        \node[transition] (leave critical) [right=of critical] {};
+        \node[transition] (enter critical) [left=of critical] {};
+
+        \draw [->] (enter critical) to (critical);
+        \draw [->] (waiting) to [out=180, in=90] (enter critical);
+\end{tikzpicture}
+\caption{Using angles to control connection lines.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical] {};
+        \node[transition] (leave critical) [right=of critical] {};
+        \node[transition] (enter critical) [left=of critical] {};
+
+        \draw [->] (enter critical) to (critical);
+        \draw [->] (waiting) to [bend right=45] (enter critical);
+        \draw [->] (enter critical) to [bend right=45] (semaphore);
+\end{tikzpicture}
+\caption{Control angles using bends.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical] {};
+        \node[transition] (leave critical) [right=of critical] {};
+        \node[transition] (enter critical) [left=of critical] {}
+                edge [->] (critical)
+                edge [<-, bend left=45] (waiting)
+                edge [->, bend right=45] (semaphore);
+\end{tikzpicture}
+\caption{Edges.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        [bend angle=45,
+         pre/.style={<-, shorten <= 1pt, >=stealth, semithick},
+         post/.style={->, shorten >= 1pt, >=stealth, semithick}]
+
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical] {};
+
+        \node[transition] (leave critical) [right=of critical] {}
+                edge [pre] (critical)
+                edge [post, bend right] node [auto, swap] {2} (waiting)
+                edge [pre, bend left] (semaphore);
+        \node[transition] (enter critical) [left=of critical] {}
+                edge [post] (critical)
+                edge [pre, bend left] (waiting)
+                edge [post, bend right] (semaphore);
+\end{tikzpicture}
+\caption{Using pre and post.}
+\end{figure}
+
+\vspace{1cm}
+
+\begin{tikzpicture}[auto, bend right]
+        \node (a) at (0:1) {$0^\circ$};
+        \node (b) at (120:1) {$120^\circ$};
+        \node (c) at (240:1) {$240^\circ$};
+
+        \draw (a) to node {1} node [swap] {1'} (b)
+                (b) to node {2} node [swap] {2'} (c)
+                (c) to node {3} node [swap] {3'} (a);
+\end{tikzpicture}
+
+\vspace{1cm}
 
 \begin{tikzpicture}
-        \path   \circnode{0}{2}
-                \circnode{0}{1}
-                \circnode{0}{0}
-                \rectnode{1}{1}
-                \rectnode{-1}{1};
+        \draw [->, decorate, decoration={snake,
+                                         amplitude=.4mm,
+                                         segment length=2mm,
+                                         post length=1mm}]
+               (0, 0) -- (3, 0)
+               node [above, align=center, midway, text width=3cm]
+               {
+                       replacement of the \textcolor{red}{capacity} by
+                       \textcolor{red}{two places}
+               };
 \end{tikzpicture}
+
+\vspace{1cm}
+
+\tikzset{pre/.style={<-, shorten <= 1pt, >=stealth, semithick},
+         post/.style={->, shorten >= 1pt, >=stealth, semithick}}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}[bend angle=45]
+        \node[place] (waiting) {};
+        \node[place] (critical) [below=of waiting] {};
+        \node[place] (semaphore) [below=of critical] {};
+
+        \node[transition] (leave critical) [right=of critical] {}
+                edge [pre] (critical)
+                edge [post, bend right] node [auto, swap] {2} (waiting)
+                edge [pre, bend left] (semaphore);
+        \node[transition] (enter critical) [left=of critical] {}
+                edge [post] (critical)
+                edge [pre, bend left] (waiting)
+                edge [post, bend right] (semaphore);
+
+        \begin{scope}[on background layer]
+                \node [fill=black!30, fit=(waiting) (critical) (semaphore)
+                        (enter critical) (leave critical)] {};
+        \end{scope}
+\end{tikzpicture}
+\caption{Background layers.}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+        [node distance=1.3cm,
+        on grid,
+        >=stealth,
+        bend angle=45,
+        auto,
+        every place/.style={minimum size=6mm, thick, draw=blue!75, fill=blue!20},
+        every transition/.style={thick, draw=blue!75, fill=blue!20},
+        red place/.style={place, draw=red!75, fill=red!20},
+        every label/.style={red}]
+
+        \node[place, tokens=1] (w1) {};
+        \node[place] (c1) [below=of w1] {};
+        \node[place] (s) [below=of c1, label=above:$s \le 3$] {};
+        \node[place] (c2) [below=of s] {};
+        \node[place] (w2) [below=of c2] {};
+
+        \node [transition] (e1) [left=of c1] {}
+                edge [pre,bend left] (w1)
+                edge [post,bend right] (s)
+                edge [post] (c1);
+        \node [transition] (e2) [left=of c2] {}
+                edge [pre,bend right] (w2)
+                edge [post,bend left] (s)
+                edge [post] (c2);
+        \node [transition] (l1) [right=of c1] {}
+                edge [pre] (c1)
+                edge [pre,bend left] (s)
+                edge [post,bend right] node[swap] {2} (w1);
+        \node [transition] (l2) [right=of c2] {}
+                edge [pre] (c2)
+                edge [pre,bend right] (s)
+                edge [post,bend left] node {2} (w2);
+
+        \begin{scope}[xshift=6cm]
+                \node[place, tokens=1] (w1') {};
+                \node[place] (c1') [below=of w1'] {};
+                \node[red place] (s1') [below=of c1', xshift=-5mm] [label=left:$s$] {};
+                \node[red place, tokens=3] (s2') [below=of c1', xshift=5mm] [label=right:$\bar{s}$] {};
+                \node[place] (c2') [below=of s1', xshift=5mm] {};
+                \node[place] (w2') [below=of c2'] {};
+
+                \node [transition] (e1') [left=of c1'] {}
+                        edge [pre,bend left] (w1')
+                        edge [post] (s1')
+                        edge [pre] (s2')
+                        edge [post] (c1');
+                \node [transition] (e2') [left=of c2'] {}
+                        edge [pre,bend right] (w2')
+                        edge [post] (s1')
+                        edge [post] (s2')
+                        edge [post] (c2');
+                \node [transition] (l1') [right=of c1'] {}
+                        edge [pre] (c1')
+                        edge [pre] (s1')
+                        edge [post] (s2')
+                        edge [post,bend right] node[swap] {2} (w1');
+                \node [transition] (l2') [right=of c2'] {}
+                        edge [pre] (c2')
+                        edge [pre] (s1')
+                        edge [post] (s2')
+                        edge [post,bend left] node {2} (w2');
+        \end{scope}
+
+        \begin{scope}[on background layer]
+                \node (r1) [fill=black!10, rounded corners, fit=(w1)(w2)(e1)(e2)(l1)(l2)] {};
+                \node (r2) [fill=black!10, rounded corners, fit=(w1')(w2')(e1')(e2')(l1')(l2')] {};
+        \end{scope}
+
+        \draw [shorten >=1mm,
+               -to,
+               thick,
+               decorate,
+               decoration={snake, amplitude=.4mm, segment length=2mm, pre=moveto, pre length=1mm, post length=2mm}]
+               (r1) -- (r2)
+               node [above=1mm, align=center, midway, text width=3cm]
+               {
+                       replacement of the \textcolor{red}{capacity} by
+                       \textcolor{red}{two places}
+               };
+\end{tikzpicture}
+\caption{The complete code.}
+\end{figure}
 
 \end{document}
